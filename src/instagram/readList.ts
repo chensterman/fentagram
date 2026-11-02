@@ -29,6 +29,22 @@ export function readAccounts(root: ParentNode, list: ListName): Account[] {
   return [...seen.values()]
 }
 
+export function readAvatarSources(root: ParentNode, list: ListName): Array<{ username: string; src: string }> {
+  const dialog = findDialog(root, list)
+  if (!dialog) return []
+  const scope = findScroller(dialog) ?? dialog
+  const seen = new Map<string, string>()
+  for (const link of scope.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+    const parsed = accountFromHref(link.getAttribute('href'))
+    if (!parsed) continue
+    const key = parsed.username.toLowerCase()
+    if (seen.has(key)) continue
+    const src = avatarSrc(link, scope)
+    if (src) seen.set(key, src)
+  }
+  return [...seen.entries()].map(([username, src]) => ({ username, src }))
+}
+
 export function readHeaderCount(root: ParentNode, list: ListName): CountReading | null {
   const label = list === 'followers' ? /followers/i : /following/i
   for (const link of root.querySelectorAll('a')) {
@@ -114,6 +130,20 @@ export function createDomListReader(doc: Document, list: ListName): ListReader {
       return 'ok'
     },
   }
+}
+
+function avatarSrc(link: HTMLElement, scope: HTMLElement): string | null {
+  let node: HTMLElement | null = link
+  while (node && node !== scope) {
+    const images = [...node.querySelectorAll('img')].filter((img) => (img.currentSrc || img.getAttribute('src') || '').length > 0)
+    const profiles = [...node.querySelectorAll('a[href]')].filter((anchor) => accountFromHref(anchor.getAttribute('href')))
+    if (images.length > 0 && profiles.length <= 2) {
+      const img = images.find((item) => /profile/i.test(item.alt)) ?? images[0]
+      return img?.currentSrc || img?.getAttribute('src') || null
+    }
+    node = node.parentElement
+  }
+  return null
 }
 
 function accountFromHref(href: string | null): Account | null {

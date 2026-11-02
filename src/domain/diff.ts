@@ -20,5 +20,5 @@ export function newFollowers(previousFollowers: Account[], currentFollowers: Acc
 }
 
 function byUsername(a: Account, b: Account): number {
-  return a.username.localeCompare(b.username)
+  return a.username.localeCompare(b.username, undefined, { sensitivity: 'base' })
 }

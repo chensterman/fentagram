@@ -10,6 +10,13 @@ describe('relationship diffs', () => {
     expect(notFollowingBack(followers, following).map((item) => item.username)).toEqual(['e'])
   })
 
+  test('sorts the not-following-back list from A to Z', () => {
+    const followers = [account('ada')]
+    const following = [account('zeta'), account('Mike'), account('bea')]
+
+    expect(notFollowingBack(followers, following).map((item) => item.username)).toEqual(['bea', 'Mike', 'zeta'])
+  })
+
   test('diffs two follower snapshots', () => {
     const previous = [account('a'), account('b'), account('c')]
     const current = [account('b'), account('C'), account('d')]

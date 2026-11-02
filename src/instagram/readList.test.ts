@@ -3,7 +3,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, test } from 'vitest'
-import { createDomListReader, findScroller, isListLoading, readAccounts, readHeaderCount } from './readList.ts'
+import { createDomListReader, findScroller, isListLoading, readAccounts, readAvatarSources, readHeaderCount } from './readList.ts'
 
 const html = readFileSync(resolve('fixtures/followers-dialog.html'), 'utf8')
 
@@ -54,6 +54,21 @@ describe('readList', () => {
     expect(findScroller(document)?.id).toBe('list')
     createDomListReader(document, 'followers').scrollToEnd()
     expect(list.scrollTop).toBe(796)
+  })
+
+  test('reads the profile image next to a username', () => {
+    document.body.innerHTML = `
+      <div role="dialog">
+        <h1>Followers</h1>
+        <div style="overflow-y: scroll">
+          <div>
+            <a href="/ada/"><img alt="ada's profile picture" src="https://cdn.example/ada.jpg"></a>
+            <a class="notranslate" href="/ada/">ada</a>
+          </div>
+        </div>
+      </div>
+    `
+    expect(readAvatarSources(document, 'followers')).toEqual([{ username: 'ada', src: 'https://cdn.example/ada.jpg' }])
   })
 
   test('sees the loading marker inside the dialog', () => {

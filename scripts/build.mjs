@@ -34,3 +34,4 @@ await build({
 await cp('src/extension/panel.html', 'dist/panel.html')
 await cp('src/extension/panel.css', 'dist/panel.css')
 await cp('src/extension/manifest.json', 'dist/manifest.json')
+await cp('src/extension/icons', 'dist/icons', { recursive: true })
