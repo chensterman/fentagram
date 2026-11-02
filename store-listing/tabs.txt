@@ -1,0 +1,1 @@
+Finds the Instagram tab you already have open so the sync can run there.

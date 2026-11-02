@@ -1,0 +1,1 @@
+Saves your follower list, following list, and small profile pictures in this browser. They stay on this device.

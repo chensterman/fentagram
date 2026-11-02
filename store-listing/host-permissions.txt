@@ -1,0 +1,3 @@
+https://www.instagram.com/* lets the extension read the followers and following lists on your own profile while that tab is open and in front.
+
+https://*.cdninstagram.com/* and https://*.fbcdn.net/* let it download the profile pictures already shown next to those names, shrink them, and keep the small copies in this browser.

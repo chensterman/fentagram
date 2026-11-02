@@ -1,0 +1,5 @@
+Fentagram shows you who follows you, who does not, and who changed their mind. Open your own Instagram profile and it sits in the side panel with three lists: people you follow who do not follow you back, people who unfollowed you, and people who followed you. Names are links, so you can open a profile straight from the list.
+
+You press Sync and leave the Instagram tab in front. It reads your followers, then the people you follow, and saves both in this browser. Come back later and run it again. Unfollows and new follows pile up across those runs, newest first, instead of disappearing the next time you check. A list that comes up short stays short. It is not counted as a bunch of unfollows.
+
+The lists never leave your computer. Fentagram does not ask for your password, and it does not send usernames or photos to a server. Install it, stay signed into Instagram, and the next sync is just yours.
