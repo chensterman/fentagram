@@ -1,5 +1,12 @@
 import { describe, expect, test } from 'vitest'
-import { parseCount } from './count.ts'
+import { countShortfallTolerance, parseCount } from './count.ts'
+
+describe('countShortfallTolerance', () => {
+  test('allows a small gap on large lists', () => {
+    expect(countShortfallTolerance(4945)).toBe(25)
+    expect(4945 - 4942).toBeLessThanOrEqual(countShortfallTolerance(4945))
+  })
+})
 
 describe('parseCount', () => {
   test('reads an exact grouped number', () => {

@@ -1,5 +1,5 @@
 import { accountKey, type Account } from '../domain/account.ts'
-import type { CountReading } from '../domain/count.ts'
+import { countShortfallTolerance, type CountReading } from '../domain/count.ts'
 import type { ListStatus, StopReason } from '../domain/snapshot.ts'
 import type { CollectOptions, ListReader, PageSignal } from './types.ts'
 
@@ -88,6 +88,10 @@ function decideEmpty(
     }
     const nextRetries = stallRetries + 1
     if (nextRetries >= options.maxStallRetries) {
+      const shortfall = header.value - size
+      if (shortfall <= countShortfallTolerance(header.value)) {
+        return { type: 'estimated', emptySettles, stallRetries: nextRetries }
+      }
       return { type: 'stalled', emptySettles, stallRetries: nextRetries }
     }
     return { type: 'backoff', emptySettles, stallRetries: nextRetries }
