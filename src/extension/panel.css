@@ -1,0 +1,105 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --text: #1c1c1c;
+  --muted: #666666;
+  --line: #e4e4e4;
+  --button: #1c1c1c;
+  --button-text: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --text: #f3f3f3;
+    --muted: #a3a3a3;
+    --line: #333333;
+    --button: #f3f3f3;
+    --button-text: #1c1c1c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 ui-sans-serif, system-ui, sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+h2 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+#status {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: var(--button);
+  color: var(--button-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+#lists {
+  overflow: auto;
+  padding: 8px 16px 24px;
+}
+
+section {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+li a {
+  display: block;
+  padding: 5px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+li a:hover { text-decoration: underline; }
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+}
