@@ -1,5 +1,6 @@
 import type { Account } from '../domain/account.ts'
 import { parseCount, type CountReading } from '../domain/count.ts'
+import { countLinkPattern, DIALOG_TITLES, isBlockedPageText } from './localeUi.ts'
 import type { ListReader, PageSignal } from '../sync/types.ts'
 
 const PROFILE_HREF = /^\/([A-Za-z0-9._]{1,30})\/$/
@@ -7,9 +8,10 @@ const RESERVED = new Set(['explore', 'reels', 'direct', 'accounts', 'about', 'le
 
 export type ListName = 'followers' | 'following'
 
-const LIST_TITLE: Record<ListName, string> = {
-  followers: 'Followers',
-  following: 'Following',
+let activeDialogList: ListName | null = null
+
+export function markOpenList(list: ListName | null): void {
+  activeDialogList = list
 }
 
 export function readAccounts(root: ParentNode, list: ListName): Account[] {
@@ -45,16 +47,28 @@ export function readAvatarSources(root: ParentNode, list: ListName): Array<{ use
   return [...seen.entries()].map(([username, src]) => ({ username, src }))
 }
 
-export function readHeaderCount(root: ParentNode, list: ListName): CountReading | null {
-  const label = list === 'followers' ? /followers/i : /following/i
-  for (const link of root.querySelectorAll('a')) {
+export function findCountLink(root: ParentNode, list: ListName, owner: string | null = null): HTMLAnchorElement | null {
+  const segment = `/${list}`
+  for (const link of root.querySelectorAll<HTMLAnchorElement>('a[href]')) {
     if (link.closest('[role="dialog"]')) continue
-    const text = link.textContent ?? ''
-    if (!label.test(text)) continue
-    const count = parseCount(text)
-    if (count) return count
+    const href = (link.getAttribute('href') ?? '').split('?')[0] ?? ''
+    if (!href.toLowerCase().includes(segment)) continue
+    if (owner && !href.toLowerCase().includes(`/${owner.toLowerCase()}${segment}`)) continue
+    if (parseCount(link.textContent ?? '')) return link
+  }
+  const pattern = countLinkPattern(list)
+  for (const link of root.querySelectorAll<HTMLAnchorElement>('a')) {
+    if (link.closest('[role="dialog"]')) continue
+    const text = (link.textContent ?? '').replace(/\s+/g, ' ').trim()
+    if (pattern.test(text)) return link
   }
   return null
+}
+
+export function readHeaderCount(root: ParentNode, list: ListName, owner: string | null = null): CountReading | null {
+  const link = findCountLink(root, list, owner)
+  if (!link) return null
+  return parseCount(link.textContent ?? '')
 }
 
 export function isListLoading(root: ParentNode, list: ListName): boolean {
@@ -63,15 +77,21 @@ export function isListLoading(root: ParentNode, list: ListName): boolean {
 }
 
 export function isListBlocked(root: ParentNode): boolean {
-  const text = root.textContent ?? ''
-  return /try again later|confirm it['’]s you|suspicious login/i.test(text)
+  return isBlockedPageText(root.textContent ?? '')
 }
 
 export function findDialog(root: ParentNode, list: ListName): HTMLElement | null {
-  const title = LIST_TITLE[list]
-  for (const dialog of root.querySelectorAll<HTMLElement>('[role="dialog"]')) {
+  const dialogs = [...root.querySelectorAll<HTMLElement>('[role="dialog"]')]
+  if (dialogs.length === 1 && activeDialogList === list) return dialogs[0] ?? null
+  const titles = DIALOG_TITLES[list]
+  for (const dialog of dialogs) {
     const heading = dialog.querySelector('h1, h2, [role="heading"]')
-    if (heading?.textContent?.trim() === title) return dialog
+    const text = heading?.textContent?.trim()
+    if (text && titles.has(text)) return dialog
+  }
+  for (const dialog of dialogs) {
+    if (activeDialogList !== list) continue
+    if (findScroller(dialog) && dialog.querySelector('a[href]')) return dialog
   }
   return null
 }
@@ -91,10 +111,10 @@ export function findScroller(dialog: ParentNode): HTMLElement | null {
   return candidates.find((element) => getComputedStyle(element).overflowY === 'scroll') ?? candidates.at(-1) ?? null
 }
 
-export function createDomListReader(doc: Document, list: ListName): ListReader {
+export function createDomListReader(doc: Document, list: ListName, owner: string | null = null): ListReader {
   return {
     readAccounts: () => readAccounts(doc, list),
-    readHeaderCount: () => readHeaderCount(doc, list),
+    readHeaderCount: () => readHeaderCount(doc, list, owner),
     scrollToEnd() {
       const dialog = findDialog(doc, list)
       const scroller = dialog && findScroller(dialog)

@@ -1,0 +1,116 @@
+{
+  "appName": {
+    "message": "Fentagram"
+  },
+  "appDescription": {
+    "message": "Sieh, wer dir nicht zurückfolgt, und behalte Verlauf von Follows und Unfollows."
+  },
+  "tablistAria": {
+    "message": "Listen"
+  },
+  "buttonSync": {
+    "message": "Synchronisieren"
+  },
+  "buttonSyncAgain": {
+    "message": "Erneut synchronisieren"
+  },
+  "buttonResume": {
+    "message": "Fortsetzen"
+  },
+  "buttonSyncing": {
+    "message": "Synchronisiere…"
+  },
+  "statusIdle": {
+    "message": "Öffne dein Instagram-Profil und tippe auf Synchronisieren. Lass den Tab im Vordergrund."
+  },
+  "statusPaused": {
+    "message": "Pausiert bei $1$. $2$ gespeichert. Kehre zum Instagram-Tab zurück und tippe auf Fortsetzen."
+  },
+  "statusBlocked": {
+    "message": "Instagram bat, es später erneut zu versuchen. Gespeicherte Daten bleiben erhalten."
+  },
+  "statusStalled": {
+    "message": "Instagram sendet keine $1$ mehr. $2$ gespeichert. Später Fortsetzen."
+  },
+  "statusProgressSaved": {
+    "message": "$1$ · $2$ gespeichert"
+  },
+  "statusProgressOf": {
+    "message": "$1$ · $2$ von $3$"
+  },
+  "statusPausedShort": {
+    "message": "Pausiert bei $1$. $2$ gespeichert."
+  },
+  "listFollowers": {
+    "message": "Follower"
+  },
+  "listFollowing": {
+    "message": "Gefolgt"
+  },
+  "tabNotFollowingBack": {
+    "message": "Folgen dir nicht zurück"
+  },
+  "tabUnfollowed": {
+    "message": "Entfolgt"
+  },
+  "tabFollowed": {
+    "message": "Neu gefolgt"
+  },
+  "emptyNotFollowingReady": {
+    "message": "Alle, denen du folgst, folgen dir zurück."
+  },
+  "emptyNotFollowingWaiting": {
+    "message": "Erscheint, wenn beide Listen fertig sind."
+  },
+  "emptyUnfollowsReady": {
+    "message": "Noch keine Unfollows."
+  },
+  "emptyUnfollowsWaiting": {
+    "message": "Erscheint nach zwei abgeschlossenen Syncs."
+  },
+  "emptyFollowsReady": {
+    "message": "Noch keine neuen Follower."
+  },
+  "emptyFollowsWaiting": {
+    "message": "Erscheint nach zwei abgeschlossenen Syncs."
+  },
+  "lastSynced": {
+    "message": "Zuletzt synchronisiert"
+  },
+  "lastSyncedAt": {
+    "message": "Zuletzt synchronisiert: $1$"
+  },
+  "lastSyncedShortList": {
+    "message": "$1$. Eine Liste lag unter der Profilanzahl."
+  },
+  "syncStarting": {
+    "message": "Synchronisation startet. Instagram-Tab im Vordergrund lassen."
+  },
+  "syncNoTab": {
+    "message": "Öffne instagram.com in einem Tab und tippe auf Synchronisieren."
+  },
+  "syncRefreshTab": {
+    "message": "Instagram-Tab aktualisieren und erneut synchronisieren."
+  },
+  "syncAlreadyRunning": {
+    "message": "In diesem Tab läuft bereits eine Synchronisation."
+  },
+  "syncFailed": {
+    "message": "Synchronisation fehlgeschlagen."
+  },
+  "errOpenProfile": {
+    "message": "Öffne dein Instagram-Profil und tippe auf Synchronisieren."
+  },
+  "errProfileTimeout": {
+    "message": "Instagram hat dein Profil nicht geöffnet."
+  },
+  "errCloseDialog": {
+    "message": "Liste konnte nicht geschlossen werden. Schließe sie manuell und sync erneut."
+  },
+  "errCountNotFound": {
+    "message": "Konnte $1$-Anzahl auf deinem Profil nicht finden."
+  },
+  "errListNotOpen": {
+    "message": "Instagram hat die Liste nicht geöffnet. Seite aktualisieren."
+  }
+}

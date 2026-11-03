@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>E2E PT profile</title>
+  </head>
+  <body data-owner="maria">
+    <nav>
+      <a href="/maria/">Perfil</a>
+    </nav>
+    <main>
+      <a href="/accounts/edit/">Editar perfil</a>
+      <a href="/maria/followers/">1270 seguidores</a>
+      <a href="/maria/following/">412 seguindo</a>
+    </main>
+    <script type="module">
+      document.querySelector('a[href="/maria/followers/"]')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        document.querySelector('[role="dialog"]')?.remove()
+        document.body.insertAdjacentHTML(
+          'beforeend',
+          `<div role="dialog"><h1>Seguidores</h1><div style="overflow-y:scroll;height:200px"><a href="/ada/">ada</a></div><button type="button"><svg aria-label="Fechar"></svg></button></div>`,
+        )
+      })
+      document.querySelector('a[href="/maria/following/"]')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        document.querySelector('[role="dialog"]')?.remove()
+        document.body.insertAdjacentHTML(
+          'beforeend',
+          `<div role="dialog"><h1>Seguindo</h1><div style="overflow-y:scroll;height:200px"><a href="/bea/">bea</a></div></div>`,
+        )
+      })
+      document.body.addEventListener('click', (event) => {
+        const target = event.target
+        if (!(target instanceof Element)) return
+        if (target.closest('[aria-label="Close"], [aria-label="Fechar"], button')) {
+          document.querySelector('[role="dialog"]')?.remove()
+        }
+      })
+    </script>
+    <script type="module" src="/harness.js"></script>
+  </body>
+</html>

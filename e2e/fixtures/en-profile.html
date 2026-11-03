@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>E2E EN profile</title>
+  </head>
+  <body data-owner="demo">
+    <nav>
+      <a href="/demo/">Profile</a>
+    </nav>
+    <main>
+      <a href="/accounts/edit/">Edit profile</a>
+      <a href="/demo/followers/">206 followers</a>
+      <a href="/demo/following/">59 following</a>
+    </main>
+    <script type="module">
+      document.querySelector('a[href="/demo/followers/"]')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        document.querySelector('[role="dialog"]')?.remove()
+        document.body.insertAdjacentHTML(
+          'beforeend',
+          `<div role="dialog"><h1>Followers</h1><div style="overflow-y:scroll;height:200px"><a href="/ada/">ada</a></div><button type="button"><svg aria-label="Close"></svg></button></div>`,
+        )
+      })
+      document.querySelector('a[href="/demo/following/"]')?.addEventListener('click', (event) => {
+        event.preventDefault()
+        document.querySelector('[role="dialog"]')?.remove()
+        document.body.insertAdjacentHTML(
+          'beforeend',
+          `<div role="dialog"><h1>Following</h1><div style="overflow-y:scroll;height:200px"><a href="/bea/">bea</a></div></div>`,
+        )
+      })
+      document.body.addEventListener('click', (event) => {
+        const target = event.target
+        if (!(target instanceof Element)) return
+        if (target.closest('[aria-label="Close"], [aria-label="Fechar"], button')) {
+          document.querySelector('[role="dialog"]')?.remove()
+        }
+      })
+    </script>
+    <script type="module" src="/harness.js"></script>
+  </body>
+</html>

@@ -2,6 +2,7 @@ import { accountKey, type Account } from '../domain/account.ts'
 import type { Snapshot } from '../domain/snapshot.ts'
 import { chromeAvatarStore } from '../storage/avatarStore.ts'
 import { chromeSnapshotStore } from '../storage/chromeStore.ts'
+import { t } from './i18n.ts'
 import { panelModel, type PanelModel, type PanelTabId } from './model.ts'
 
 const app = document.querySelector('#app')
@@ -53,20 +54,20 @@ async function boot(root: Element): Promise<void> {
 
 async function startSync(draw: () => Promise<void>): Promise<void> {
   busy = true
-  liveStatus = 'Starting the sync. Leave the Instagram tab in front.'
+  liveStatus = t('syncStarting')
   await draw()
   const tab = await instagramTab()
   if (!tab?.id) {
     busy = false
-    liveStatus = 'Open instagram.com in a tab, then press Sync.'
+    liveStatus = t('syncNoTab')
     await draw()
     return
   }
   try {
     const response = await chrome.tabs.sendMessage(tab.id, { type: 'fentagram-sync' }) as { ok?: boolean; error?: string } | undefined
-    if (!response?.ok) liveStatus = response?.error ?? 'Refresh the Instagram tab, then press Sync again.'
+    if (!response?.ok) liveStatus = response?.error ?? t('syncRefreshTab')
   } catch {
-    liveStatus = 'Refresh the Instagram tab, then press Sync again.'
+    liveStatus = t('syncRefreshTab')
   } finally {
     busy = false
     await draw()
@@ -102,7 +103,7 @@ function header(model: PanelModel, status: string, disabled: boolean, onSync: ()
   mark.width = 28
   mark.height = 28
   const title = document.createElement('h1')
-  title.textContent = 'Fentagram'
+  title.textContent = t('appName')
   brand.append(mark, title)
 
   const statusNode = document.createElement('p')
@@ -112,7 +113,7 @@ function header(model: PanelModel, status: string, disabled: boolean, onSync: ()
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'sync'
-  button.textContent = disabled ? 'Syncing…' : model.button
+  button.textContent = disabled ? t('buttonSyncing') : model.button
   button.disabled = disabled
   button.addEventListener('click', onSync)
   bar.append(brand, statusNode, button)
@@ -123,7 +124,7 @@ function tablist(model: PanelModel): HTMLElement {
   const nav = document.createElement('div')
   nav.className = 'tabs'
   nav.setAttribute('role', 'tablist')
-  nav.setAttribute('aria-label', 'Lists')
+  nav.setAttribute('aria-label', t('tablistAria'))
   for (const tab of model.tabs) {
     const button = document.createElement('button')
     button.type = 'button'

@@ -1,4 +1,5 @@
-import type { Snapshot } from './snapshot.ts'
+import type { Snapshot } from '../domain/snapshot.ts'
+import { t } from './i18n.ts'
 
 const WHEN: Intl.DateTimeFormatOptions = {
   month: 'short',
@@ -10,12 +11,12 @@ const WHEN: Intl.DateTimeFormatOptions = {
 
 export function formatSyncedAt(iso: string): string {
   const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return 'Last synced'
-  return `Last synced at ${date.toLocaleString(undefined, WHEN)}`
+  if (Number.isNaN(date.getTime())) return t('lastSynced')
+  return t('lastSyncedAt', [date.toLocaleString(undefined, WHEN)])
 }
 
 export function lastSyncedStatus(snapshot: Snapshot): string {
   const when = formatSyncedAt(snapshot.finishedAt ?? snapshot.startedAt)
   const short = snapshot.followersStatus === 'estimated' || snapshot.followingStatus === 'estimated'
-  return short ? `${when}. A list was short of the profile count.` : when
+  return short ? t('lastSyncedShortList', [when]) : when
 }

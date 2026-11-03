@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 import { account } from '../domain/account.ts'
 import { createSnapshot } from '../domain/snapshot.ts'
 import type { Snapshot } from '../domain/snapshot.ts'
-import { formatSyncedAt } from '../domain/syncedAt.ts'
+import { formatSyncedAt } from './status.ts'
 import { panelModel } from './model.ts'
 
 function done(id: string, startedAt: string, followers: Snapshot['followers'], following: Snapshot['following']): Snapshot {

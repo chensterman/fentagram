@@ -1,17 +1,21 @@
 {
   "name": "fentagram",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.5.0",
   "type": "module",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
-    "build": "node scripts/build.mjs"
+    "test:e2e": "vitest run src/e2e/multilang.flow.test.ts",
+    "test:e2e:browser": "PLAYWRIGHT_BROWSERS_PATH=./node_modules/.playwright-browsers node scripts/e2e.mjs",
+    "build": "node scripts/build.mjs",
+    "locales": "node scripts/seed-locale-data.mjs && node scripts/build-locales.mjs"
   },
   "devDependencies": {
     "@types/chrome": "^0.1.24",
     "esbuild": "^0.25.11",
     "happy-dom": "^21.0.4",
+    "playwright": "^1.56.1",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }

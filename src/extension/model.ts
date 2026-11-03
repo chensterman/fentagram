@@ -3,7 +3,8 @@ import { notFollowingBack } from '../domain/diff.ts'
 import { followerHistory } from '../domain/history.ts'
 import type { Snapshot } from '../domain/snapshot.ts'
 import { isFinished } from '../domain/snapshot.ts'
-import { lastSyncedStatus } from '../domain/syncedAt.ts'
+import { t, listLabel } from './i18n.ts'
+import { lastSyncedStatus } from './status.ts'
 
 export type PanelTabId = 'not-following-back' | 'unfollowed' | 'followed'
 
@@ -36,24 +37,24 @@ export function panelModel(snapshots: Snapshot[]): PanelModel {
 
   return {
     status: statusText(latest),
-    button: latest && !isFinished(latest) ? 'Resume' : latest ? 'Sync again' : 'Sync',
+    button: latest && !isFinished(latest) ? t('buttonResume') : latest ? t('buttonSyncAgain') : t('buttonSync'),
     tabs: [
       {
         id: 'not-following-back',
-        title: 'Not following back',
-        empty: ready ? 'Everyone you follow follows you back.' : 'Shows when both lists finish.',
+        title: t('tabNotFollowingBack'),
+        empty: ready ? t('emptyNotFollowingReady') : t('emptyNotFollowingWaiting'),
         entries: notFollowing.map((account) => ({ account, at: null })),
       },
       {
         id: 'unfollowed',
-        title: 'Unfollowed',
-        empty: completeFollowers >= 2 ? 'No unfollows yet.' : 'Shows after two finished syncs.',
+        title: t('tabUnfollowed'),
+        empty: completeFollowers >= 2 ? t('emptyUnfollowsReady') : t('emptyUnfollowsWaiting'),
         entries: history.unfollowed.map((event) => ({ account: event.account, at: event.at })),
       },
       {
         id: 'followed',
-        title: 'Followed',
-        empty: completeFollowers >= 2 ? 'No new follows yet.' : 'Shows after two finished syncs.',
+        title: t('tabFollowed'),
+        empty: completeFollowers >= 2 ? t('emptyFollowsReady') : t('emptyFollowsWaiting'),
         entries: history.followed.map((event) => ({ account: event.account, at: event.at })),
       },
     ],
@@ -69,12 +70,13 @@ function stamp(snapshot: Snapshot): string {
 }
 
 function statusText(snapshot: Snapshot | null): string {
-  if (!snapshot) return 'Open your Instagram profile, then press Sync. Leave that tab in front.'
+  if (!snapshot) return t('statusIdle')
   const list = snapshot.phase === 'following' ? 'following' : 'followers'
   const count = list === 'following' ? snapshot.following.length : snapshot.followers.length
-  if (snapshot.stopReason === 'paused') return `Paused during ${list}. ${count} saved. Come back to the Instagram tab and press Resume.`
-  if (snapshot.stopReason === 'blocked') return 'Instagram asked you to try again later. What was collected is saved.'
-  if (snapshot.stopReason === 'stalled') return `Instagram stopped sending ${list}. ${count} saved. Press Resume later.`
+  const noun = listLabel(list)
+  if (snapshot.stopReason === 'paused') return t('statusPaused', [noun, String(count)])
+  if (snapshot.stopReason === 'blocked') return t('statusBlocked')
+  if (snapshot.stopReason === 'stalled') return t('statusStalled', [noun, String(count)])
   if (isFinished(snapshot)) return lastSyncedStatus(snapshot)
-  return `${list === 'following' ? 'Following' : 'Followers'} · ${count} saved`
+  return t('statusProgressSaved', [noun, String(count)])
 }

@@ -1,0 +1,116 @@
+{
+  "appName": {
+    "message": "Fentagram"
+  },
+  "appDescription": {
+    "message": "Veja quem não segue você de volta e acompanhe quem seguiu ou deixou de seguir."
+  },
+  "tablistAria": {
+    "message": "Listas"
+  },
+  "buttonSync": {
+    "message": "Sincronizar"
+  },
+  "buttonSyncAgain": {
+    "message": "Sincronizar de novo"
+  },
+  "buttonResume": {
+    "message": "Retomar"
+  },
+  "buttonSyncing": {
+    "message": "Sincronizando…"
+  },
+  "statusIdle": {
+    "message": "Abra seu perfil no Instagram e pressione Sincronizar. Deixe essa aba em primeiro plano."
+  },
+  "statusPaused": {
+    "message": "Pausado durante $1$. $2$ salvos. Volte à aba do Instagram e pressione Retomar."
+  },
+  "statusBlocked": {
+    "message": "O Instagram pediu para tentar mais tarde. O que foi coletado está salvo."
+  },
+  "statusStalled": {
+    "message": "O Instagram parou de enviar $1$. $2$ salvos. Pressione Retomar mais tarde."
+  },
+  "statusProgressSaved": {
+    "message": "$1$ · $2$ salvos"
+  },
+  "statusProgressOf": {
+    "message": "$1$ · $2$ de $3$"
+  },
+  "statusPausedShort": {
+    "message": "Pausado durante $1$. $2$ salvos."
+  },
+  "listFollowers": {
+    "message": "Seguidores"
+  },
+  "listFollowing": {
+    "message": "Seguindo"
+  },
+  "tabNotFollowingBack": {
+    "message": "Não seguem de volta"
+  },
+  "tabUnfollowed": {
+    "message": "Deixaram de seguir"
+  },
+  "tabFollowed": {
+    "message": "Seguiram"
+  },
+  "emptyNotFollowingReady": {
+    "message": "Todos que você segue também seguem você."
+  },
+  "emptyNotFollowingWaiting": {
+    "message": "Aparece quando as duas listas terminarem."
+  },
+  "emptyUnfollowsReady": {
+    "message": "Ninguém deixou de seguir ainda."
+  },
+  "emptyUnfollowsWaiting": {
+    "message": "Aparece após duas sincronizações concluídas."
+  },
+  "emptyFollowsReady": {
+    "message": "Nenhum seguidor novo ainda."
+  },
+  "emptyFollowsWaiting": {
+    "message": "Aparece após duas sincronizações concluídas."
+  },
+  "lastSynced": {
+    "message": "Última sincronização"
+  },
+  "lastSyncedAt": {
+    "message": "Última sincronização em $1$"
+  },
+  "lastSyncedShortList": {
+    "message": "$1$. Uma lista ficou abaixo do total do perfil."
+  },
+  "syncStarting": {
+    "message": "Iniciando a sincronização. Deixe a aba do Instagram em primeiro plano."
+  },
+  "syncNoTab": {
+    "message": "Abra instagram.com em uma aba e pressione Sincronizar."
+  },
+  "syncRefreshTab": {
+    "message": "Atualize a aba do Instagram e pressione Sincronizar de novo."
+  },
+  "syncAlreadyRunning": {
+    "message": "Já há uma sincronização em andamento nesta aba."
+  },
+  "syncFailed": {
+    "message": "Falha na sincronização."
+  },
+  "errOpenProfile": {
+    "message": "Abra seu perfil no Instagram e pressione Sincronizar."
+  },
+  "errProfileTimeout": {
+    "message": "O Instagram não abriu seu perfil."
+  },
+  "errCloseDialog": {
+    "message": "Não foi possível fechar a lista aberta. Feche-a e pressione Sincronizar de novo."
+  },
+  "errCountNotFound": {
+    "message": "Não foi possível encontrar a contagem de $1$ no seu perfil."
+  },
+  "errListNotOpen": {
+    "message": "O Instagram não abriu a lista. Atualize a página e tente de novo."
+  }
+}

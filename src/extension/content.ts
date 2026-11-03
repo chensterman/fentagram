@@ -3,10 +3,12 @@ import { profileOwner, profilePlace } from '../instagram/ownProfile.ts'
 import { openList } from '../instagram/openList.ts'
 import { readAvatarSources, readHeaderCount } from '../instagram/readList.ts'
 import { createDomListReader } from '../instagram/readList.ts'
+import { isProfileNavLink } from '../instagram/profileNav.ts'
 import { shrinkAvatar } from '../instagram/shrinkAvatar.ts'
 import { createSnapshot, isFinished } from '../domain/snapshot.ts'
 import type { Snapshot } from '../domain/snapshot.ts'
-import { lastSyncedStatus } from '../domain/syncedAt.ts'
+import { listLabel, t } from './i18n.ts'
+import { lastSyncedStatus } from './status.ts'
 import { chromeAvatarStore } from '../storage/avatarStore.ts'
 import { chromeSnapshotStore } from '../storage/chromeStore.ts'
 import { productionCollectOptions } from '../sync/types.ts'
@@ -19,14 +21,14 @@ watchOwnProfile()
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message?.type !== 'fentagram-sync') return
   if (running) {
-    sendResponse({ ok: false, error: 'A sync is already running in this tab.' })
+    sendResponse({ ok: false, error: t('syncAlreadyRunning') })
     return
   }
   running = true
   syncFromPage()
     .then(() => sendResponse({ ok: true }))
     .catch((error: unknown) => {
-      const text = error instanceof Error ? error.message : 'Sync failed.'
+      const text = error instanceof Error ? error.message : t('syncFailed')
       sendResponse({ ok: false, error: text })
     })
     .finally(() => {
@@ -40,33 +42,34 @@ async function syncFromPage(): Promise<Snapshot> {
   const snapshots = await store.list()
   const latest = snapshots.at(-1) ?? null
   let current = latest && !isFinished(latest) ? latest : createSnapshot(crypto.randomUUID(), new Date().toISOString())
+  const owner = profileOwner(document.location.pathname)
   let writes = Promise.resolve()
   const remember = (snapshot: Snapshot, status: string) => {
     current = snapshot
     writes = writes.then(() => store.save(snapshot))
     publish(snapshot, status)
   }
-  remember(current, statusLine(current))
+  remember(current, statusLine(current, owner))
 
   const result = await runSync(
     current,
     {
-      followers: createDomListReader(document, 'followers'),
-      following: createDomListReader(document, 'following'),
+      followers: createDomListReader(document, 'followers', owner),
+      following: createDomListReader(document, 'following', owner),
     },
     productionCollectOptions,
     () => new Date().toISOString(),
     {
       beforeList: (list) => openList(document, list),
       onProgress: (snapshot) => {
-        remember(snapshot, statusLine(snapshot))
+        remember(snapshot, statusLine(snapshot, owner))
         enqueueAvatars(document)
       },
     },
   )
   await writes
   await store.save(result)
-  publish(result, statusLine(result))
+  publish(result, statusLine(result, owner))
   return result
 }
 
@@ -108,7 +111,6 @@ function watchOwnProfile(): void {
   let path = ''
   let owner: string | null = null
   let place: 'own' | 'other' | null = null
-  let timer = 0
   const publish = () => {
     if (location.pathname !== path) {
       path = location.pathname
@@ -124,7 +126,7 @@ function watchOwnProfile(): void {
   const schedule = () => {
     if (pending) return
     pending = true
-    timer = window.setTimeout(() => {
+    window.setTimeout(() => {
       pending = false
       publish()
     }, 200)
@@ -143,7 +145,7 @@ function watchOwnProfile(): void {
     if (!(target instanceof Element)) return
     const link = target.closest('a')
     if (!(link instanceof HTMLAnchorElement)) return
-    if ((link.textContent ?? '').replace(/\s+/g, ' ').trim() !== 'Profile') return
+    if (!isProfileNavLink(link, owner)) return
     chrome.runtime.sendMessage({ type }).catch(() => {})
   }
   document.addEventListener('mousedown', (event) => onProfileLink(event, 'fentagram-arm-panel'), true)
@@ -152,13 +154,13 @@ function watchOwnProfile(): void {
   publish()
 }
 
-function statusLine(snapshot: Snapshot): string {
+function statusLine(snapshot: Snapshot, owner: string | null): string {
   if (snapshot.phase === 'done') return lastSyncedStatus(snapshot)
   const list = snapshot.phase === 'following' ? 'following' : 'followers'
   const collected = list === 'following' ? snapshot.following.length : snapshot.followers.length
-  const header = readHeaderCount(document, list)
-  const noun = list === 'following' ? 'Following' : 'Followers'
-  if (snapshot.stopReason === 'paused') return `Paused during ${list}. ${collected} saved.`
-  if (header) return `${noun} · ${collected} of ${header.value.toLocaleString()}`
-  return `${noun} · ${collected} saved`
+  const header = readHeaderCount(document, list, owner)
+  const noun = listLabel(list)
+  if (snapshot.stopReason === 'paused') return t('statusPausedShort', [noun, String(collected)])
+  if (header) return t('statusProgressOf', [noun, String(collected), header.value.toLocaleString()])
+  return t('statusProgressSaved', [noun, String(collected)])
 }

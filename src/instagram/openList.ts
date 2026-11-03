@@ -1,30 +1,15 @@
-import { findDialog, readHeaderCount, type ListName } from './readList.ts'
+import { listLabel, t } from '../extension/i18n.ts'
+import { profileOwner } from './ownProfile.ts'
+import { findProfileLink } from './profileNav.ts'
+import { closeDialog as closeListDialog } from './dialog.ts'
+import { findCountLink, findDialog, markOpenList, readHeaderCount, type ListName } from './readList.ts'
 
-export function findProfileLink(root: ParentNode): HTMLAnchorElement | null {
-  for (const link of root.querySelectorAll('a')) {
-    if ((link.textContent ?? '').replace(/\s+/g, ' ').trim() === 'Profile') return link
-  }
-  return null
-}
-
-export function findCountLink(root: ParentNode, list: ListName): HTMLAnchorElement | null {
-  const pattern = list === 'followers' ? /^\d[\d,.\skKmM]*followers$/i : /^\d[\d,.\skKmM]*following$/i
-  for (const link of root.querySelectorAll('a')) {
-    if (link.closest('[role="dialog"]')) continue
-    const text = (link.textContent ?? '').replace(/\s+/g, ' ').trim()
-    if (pattern.test(text)) return link
-  }
-  return null
-}
+export { findCountLink } from './readList.ts'
+export { findProfileLink } from './profileNav.ts'
 
 export function closeDialog(root: ParentNode): void {
-  const dialog = root.querySelector('[role="dialog"]')
-  if (!dialog) return
-  const close = dialog.querySelector<HTMLElement>('[aria-label="Close"]')
-  if (!close) return
-  const parent = close.parentElement
-  const target = parent instanceof HTMLElement && parent !== dialog ? parent : close
-  target.click()
+  closeListDialog(root)
+  markOpenList(null)
 }
 
 export async function openList(
@@ -32,25 +17,27 @@ export async function openList(
   list: ListName,
   sleep: (ms: number) => Promise<void> = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 ): Promise<void> {
+  const owner = profileOwner(doc.location.pathname)
   if (findDialog(doc, list)) return
-  if (!readHeaderCount(doc, list)) {
-    const profile = findProfileLink(doc)
-    if (!profile) throw new Error('Open your Instagram profile, then press Sync.')
+  if (!readHeaderCount(doc, list, owner)) {
+    const profile = findProfileLink(doc, owner)
+    if (!profile) throw new Error(t('errOpenProfile'))
     profile.click()
-    await waitUntil(() => readHeaderCount(doc, list) !== null, sleep, 'Instagram did not open your profile.')
+    await waitUntil(() => readHeaderCount(doc, list, owner) !== null, sleep, t('errProfileTimeout'))
   }
   if (doc.querySelector('[role="dialog"]')) {
     closeDialog(doc)
     await waitUntil(
       () => doc.querySelector('[role="dialog"]') === null,
       sleep,
-      'Could not close the open list. Close it, then press Sync again.',
+      t('errCloseDialog'),
     )
   }
-  const link = findCountLink(doc, list)
-  if (!link) throw new Error(`Could not find the ${list} count on your profile.`)
+  const link = findCountLink(doc, list, owner)
+  if (!link) throw new Error(t('errCountNotFound', [listLabel(list)]))
   link.click()
-  await waitUntil(() => findDialog(doc, list) !== null, sleep, 'Instagram did not open the list. Refresh the page and try again.')
+  await waitUntil(() => findDialog(doc, list) !== null, sleep, t('errListNotOpen'))
+  markOpenList(list)
 }
 
 async function waitUntil(

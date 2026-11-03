@@ -1,9 +1,11 @@
 // @vitest-environment happy-dom
 
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test } from 'vitest'
 import { findCountLink, findProfileLink, openList } from './openList.ts'
+import { markOpenList } from './readList.ts'
 
 describe('openList', () => {
+  beforeEach(() => markOpenList(null))
   test('clicks the followers count and waits for the dialog', async () => {
     document.body.innerHTML = `
       <a href="#">206 followers</a>
@@ -25,8 +27,8 @@ describe('openList', () => {
 
   test('opens the profile first when the counts are not on screen', async () => {
     document.body.innerHTML = '<a href="/jingjangly/">Profile</a>'
-    expect(findProfileLink(document)?.textContent).toBe('Profile')
-    findProfileLink(document)?.addEventListener('click', () => {
+    expect(findProfileLink(document, 'jingjangly')?.textContent).toBe('Profile')
+    findProfileLink(document, 'jingjangly')?.addEventListener('click', () => {
       document.body.insertAdjacentHTML('beforeend', '<a href="#">59 following</a>')
     })
     document.addEventListener('click', (event) => {

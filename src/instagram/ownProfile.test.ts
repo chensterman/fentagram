@@ -20,6 +20,16 @@ describe('profilePlace', () => {
     expect(profilePlace(document, '/jingjangly/', null)).toBe('loading')
   })
 
+  test('recognizes your own profile in Portuguese', () => {
+    document.body.innerHTML = '<main><a href="/accounts/edit/">Editar perfil</a></main>'
+    expect(profilePlace(document, '/jingjangly/', null)).toBe('own')
+  })
+
+  test('recognizes your profile from the saved username without English buttons', () => {
+    document.body.innerHTML = '<main></main>'
+    expect(profilePlace(document, '/jingjangly/', 'jingjangly')).toBe('own')
+  })
+
   test('keeps the followers dialog on your profile', () => {
     document.body.innerHTML = '<main></main>'
     expect(profilePlace(document, '/jingjangly/followers/', 'jingjangly')).toBe('own')
