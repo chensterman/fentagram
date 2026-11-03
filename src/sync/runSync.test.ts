@@ -9,9 +9,7 @@ import type { CollectOptions } from './types.ts'
 
 const options: CollectOptions = {
   delayMs: 0,
-  backoffMs: 0,
   settleStrikes: 3,
-  maxStallRetries: 3,
   maxSteps: 100,
   sleep: async () => {},
 }

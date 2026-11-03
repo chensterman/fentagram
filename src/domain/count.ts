@@ -6,11 +6,6 @@ export interface CountReading {
 
 const COUNT_TOKEN = /(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?\s*[kKmM]|\d+)/
 
-/** Profile totals can be a few higher than what the followers/following modal returns. */
-export function countShortfallTolerance(exactCount: number): number {
-  return Math.ceil(exactCount * 0.01)
-}
-
 export function parseCount(raw: string): CountReading | null {
   const match = raw.trim().match(COUNT_TOKEN)
   if (!match?.[1]) return null

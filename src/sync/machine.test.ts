@@ -6,9 +6,7 @@ import { parseCount } from '../domain/count.ts'
 
 const options: CollectOptions = {
   delayMs: 0,
-  backoffMs: 0,
   settleStrikes: 3,
-  maxStallRetries: 3,
   maxSteps: 100,
   sleep: async () => {},
 }
@@ -68,14 +66,14 @@ describe('collectList', () => {
     expect(result.accounts).toHaveLength(36)
   })
 
-  test('stalls and keeps the set when the exact count is still short', async () => {
+  test('estimates when scrolls stop adding profiles before the header count', async () => {
     const pages = [pageOf(0, 12), pageOf(12, 12)]
     const list = new FakeList(pages, exact(100))
 
     const result = await collectList(list, [], options)
 
-    expect(result.status).toBe('partial')
-    expect(result.stopReason).toBe('stalled')
+    expect(result.status).toBe('estimated')
+    expect(result.stopReason).toBe('done')
     expect(names(result.accounts)).toEqual(names(pages.flat()))
   })
 

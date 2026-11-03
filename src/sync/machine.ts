@@ -1,5 +1,5 @@
 import { accountKey, type Account } from '../domain/account.ts'
-import { countShortfallTolerance, type CountReading } from '../domain/count.ts'
+import type { CountReading } from '../domain/count.ts'
 import type { ListStatus, StopReason } from '../domain/snapshot.ts'
 import type { CollectOptions, ListReader, PageSignal } from './types.ts'
 
@@ -10,9 +10,8 @@ export interface ListResult {
 }
 
 interface Decision {
-  type: 'continue' | 'backoff' | 'complete' | 'estimated' | 'stalled'
-  emptySettles: number
-  stallRetries: number
+  type: 'continue' | 'complete' | 'estimated'
+  idleScrolls: number
 }
 
 export async function collectList(
@@ -25,8 +24,8 @@ export async function collectList(
 
   let afterScroll = false
   let lastSignal: PageSignal = 'settled'
-  let emptySettles = 0
-  let stallRetries = 0
+  let idleScrolls = 0
+  let sizeBeforeScroll = collected.size
 
   for (let step = 0; step < options.maxSteps; step += 1) {
     merge(collected, reader.readAccounts())
@@ -36,25 +35,15 @@ export async function collectList(
       return finish(collected, 'partial', interruption === 'hidden' ? 'paused' : 'blocked')
     }
 
-    if (afterScroll && lastSignal === 'grew') {
-      emptySettles = 0
-      stallRetries = 0
-    }
-
-    if (afterScroll && lastSignal === 'settled') {
-      const decision = decideEmpty(
-        reader.readHeaderCount(),
-        collected.size,
-        emptySettles,
-        stallRetries,
-        options,
-      )
-      emptySettles = decision.emptySettles
-      stallRetries = decision.stallRetries
-      if (decision.type === 'complete') return finish(collected, 'complete', 'done')
-      if (decision.type === 'estimated') return finish(collected, 'estimated', 'done')
-      if (decision.type === 'stalled') return finish(collected, 'partial', 'stalled')
-      if (decision.type === 'backoff') await options.sleep(options.backoffMs)
+    if (afterScroll) {
+      if (collected.size > sizeBeforeScroll) {
+        idleScrolls = 0
+      } else if (lastSignal === 'settled') {
+        const decision = decideIdleScroll(reader.readHeaderCount(), collected.size, idleScrolls, options)
+        idleScrolls = decision.idleScrolls
+        if (decision.type === 'complete') return finish(collected, 'complete', 'done')
+        if (decision.type === 'estimated') return finish(collected, 'estimated', 'done')
+      }
     }
 
     await options.sleep(options.delayMs)
@@ -63,6 +52,7 @@ export async function collectList(
       return finish(collected, 'partial', paused === 'hidden' ? 'paused' : 'blocked')
     }
 
+    sizeBeforeScroll = collected.size
     reader.scrollToEnd()
     lastSignal = await reader.waitForPage()
     afterScroll = true
@@ -75,33 +65,21 @@ export async function collectList(
   throw new Error('collectList exceeded maxSteps')
 }
 
-function decideEmpty(
+function decideIdleScroll(
   header: CountReading | null,
   size: number,
-  emptySettles: number,
-  stallRetries: number,
+  idleScrolls: number,
   options: CollectOptions,
 ): Decision {
-  if (header?.kind === 'exact') {
-    if (size >= header.value) {
-      return { type: 'complete', emptySettles, stallRetries }
-    }
-    const nextRetries = stallRetries + 1
-    if (nextRetries >= options.maxStallRetries) {
-      const shortfall = header.value - size
-      if (shortfall <= countShortfallTolerance(header.value)) {
-        return { type: 'estimated', emptySettles, stallRetries: nextRetries }
-      }
-      return { type: 'stalled', emptySettles, stallRetries: nextRetries }
-    }
-    return { type: 'backoff', emptySettles, stallRetries: nextRetries }
+  if (header?.kind === 'exact' && size >= header.value) {
+    return { type: 'complete', idleScrolls }
   }
 
-  const nextSettles = emptySettles + 1
-  if (nextSettles >= options.settleStrikes) {
-    return { type: 'estimated', emptySettles: nextSettles, stallRetries }
+  const nextIdle = idleScrolls + 1
+  if (nextIdle >= options.settleStrikes) {
+    return { type: 'estimated', idleScrolls: nextIdle }
   }
-  return { type: 'continue', emptySettles: nextSettles, stallRetries }
+  return { type: 'continue', idleScrolls: nextIdle }
 }
 
 function merge(into: Map<string, Account>, visible: Account[]): void {

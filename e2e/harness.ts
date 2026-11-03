@@ -14,7 +14,7 @@ export async function runFlow(doc: Document, owner: string, locale: string): Pro
   const checks: string[] = []
   const errors: string[] = []
   const pathname = `/${owner}/`
-  Object.defineProperty(doc, 'location', { value: { pathname }, configurable: true })
+  setPathname(doc, pathname)
 
   markOpenList(null)
 
@@ -51,6 +51,18 @@ export async function runFlow(doc: Document, owner: string, locale: string): Pro
   }
 
   return { ok: errors.length === 0, locale, checks, errors }
+}
+
+function setPathname(doc: Document, pathname: string): void {
+  try {
+    Object.defineProperty(doc, 'location', { value: { pathname }, configurable: true })
+    return
+  } catch {
+    // Real browsers keep a non-configurable location; drive routing via history instead.
+  }
+  if (typeof doc.defaultView?.history?.replaceState === 'function') {
+    doc.defaultView.history.replaceState(null, '', pathname)
+  }
 }
 
 function publish(result: E2EResult): void {

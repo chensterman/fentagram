@@ -13,9 +13,7 @@ export interface ListReader {
 
 export interface CollectOptions {
   delayMs: number
-  backoffMs: number
   settleStrikes: number
-  maxStallRetries: number
   maxSteps: number
   sleep: (ms: number) => Promise<void>
   onProgress?: (update: { accounts: Account[] }) => void
@@ -23,9 +21,7 @@ export interface CollectOptions {
 
 export const productionCollectOptions: CollectOptions = {
   delayMs: 800,
-  backoffMs: 1_500,
   settleStrikes: 3,
-  maxStallRetries: 3,
   maxSteps: 10_000,
   sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 }
