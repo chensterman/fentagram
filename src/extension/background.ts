@@ -1,5 +1,6 @@
 chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => {})
-chrome.sidePanel.setOptions({ enabled: false }).catch(() => {})
+// Keep the panel available from the toolbar on any tab; disabling it made the extension look broken in review.
+chrome.sidePanel.setOptions({ path: 'panel.html', enabled: true }).catch(() => {})
 
 chrome.runtime.onMessage.addListener((message, sender) => {
   const tabId = sender.tab?.id
@@ -16,10 +17,5 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     chrome.sidePanel.setOptions({ tabId, path: 'panel.html', enabled: true })
       .then(() => chrome.sidePanel.open({ tabId }))
       .catch(() => {})
-    return
-  }
-  if (message?.type === 'fentagram-profile' && message.own === false) {
-    chrome.sidePanel.close({ tabId }).catch(() => {})
-    chrome.sidePanel.setOptions({ tabId, enabled: false }).catch(() => {})
   }
 })

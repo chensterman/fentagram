@@ -38,11 +38,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 })
 
 async function syncFromPage(): Promise<Snapshot> {
+  const owner = profileOwner(document.location.pathname)
+  if (profilePlace(document, document.location.pathname, owner) !== 'own') {
+    throw new Error(t('errOpenProfile'))
+  }
+
   const store = chromeSnapshotStore()
   const snapshots = await store.list()
   const latest = snapshots.at(-1) ?? null
   let current = latest && !isFinished(latest) ? latest : createSnapshot(crypto.randomUUID(), new Date().toISOString())
-  const owner = profileOwner(document.location.pathname)
   let writes = Promise.resolve()
   const remember = (snapshot: Snapshot, status: string) => {
     current = snapshot
