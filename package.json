@@ -1,7 +1,7 @@
 {
   "name": "fentagram",
   "private": true,
-  "version": "0.5.2",
+  "version": "0.5.3",
   "type": "module",
   "scripts": {
     "test": "vitest run",
@@ -9,6 +9,7 @@
     "test:e2e": "vitest run src/e2e/multilang.flow.test.ts",
     "test:e2e:browser": "PLAYWRIGHT_BROWSERS_PATH=./node_modules/.playwright-browsers node scripts/e2e.mjs",
     "build": "node scripts/build.mjs",
+    "pack": "npm run build && cd dist && zip -r ../fentagram.zip . -x '*.DS_Store' -x '**/.DS_Store'",
     "locales": "node scripts/seed-locale-data.mjs && node scripts/build-locales.mjs"
   },
   "devDependencies": {

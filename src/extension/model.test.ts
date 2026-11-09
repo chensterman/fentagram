@@ -22,6 +22,7 @@ describe('panelModel', () => {
   test('starts empty', () => {
     const model = panelModel([])
     expect(model.button).toBe('Sync')
+    expect(model.status).toContain('instagram.com')
     expect(model.tabs.map((tab) => tab.empty)).toEqual([
       'Shows when both lists finish.',
       'Shows after two finished syncs.',

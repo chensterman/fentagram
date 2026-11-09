@@ -16,26 +16,35 @@ import { runSync } from '../sync/runSync.ts'
 
 let running = false
 
-watchOwnProfile()
+const booted = globalThis as typeof globalThis & { __fentagramContent?: boolean }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type !== 'fentagram-sync') return
-  if (running) {
-    sendResponse({ ok: false, error: t('syncAlreadyRunning') })
-    return
-  }
-  running = true
-  syncFromPage()
-    .then(() => sendResponse({ ok: true }))
-    .catch((error: unknown) => {
-      const text = error instanceof Error ? error.message : t('syncFailed')
-      sendResponse({ ok: false, error: text })
-    })
-    .finally(() => {
-      running = false
-    })
-  return true
-})
+if (!booted.__fentagramContent) {
+  booted.__fentagramContent = true
+  watchOwnProfile()
+
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message?.type === 'fentagram-ping') {
+      sendResponse({ ok: true })
+      return
+    }
+    if (message?.type !== 'fentagram-sync') return
+    if (running) {
+      sendResponse({ ok: false, error: t('syncAlreadyRunning') })
+      return
+    }
+    running = true
+    syncFromPage()
+      .then(() => sendResponse({ ok: true }))
+      .catch((error: unknown) => {
+        const text = error instanceof Error ? error.message : t('syncFailed')
+        sendResponse({ ok: false, error: text })
+      })
+      .finally(() => {
+        running = false
+      })
+    return true
+  })
+}
 
 async function syncFromPage(): Promise<Snapshot> {
   const owner = profileOwner(document.location.pathname)

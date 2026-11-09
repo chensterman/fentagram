@@ -20,26 +20,83 @@
   "buttonSyncing": {
     "message": "Synchronisation…"
   },
+  "buttonOpenInstagram": {
+    "message": "Open Instagram"
+  },
   "statusIdle": {
     "message": "Ouvrez votre profil Instagram et appuyez sur Synchroniser. Gardez l’onglet au premier plan."
   },
   "statusPaused": {
-    "message": "En pause pendant $1$. $2$ enregistrés. Revenez sur Instagram et appuyez sur Reprendre."
+    "message": "En pause pendant $1$. $2$ enregistrés. Revenez sur Instagram et appuyez sur Reprendre.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      },
+      "2": {
+        "content": "$2",
+        "example": "…"
+      }
+    }
   },
   "statusBlocked": {
     "message": "Instagram a demandé de réessayer plus tard. Les données collectées sont enregistrées."
   },
   "statusStalled": {
-    "message": "Instagram a arrêté d’envoyer $1$. $2$ enregistrés. Reprenez plus tard."
+    "message": "Instagram a arrêté d’envoyer $1$. $2$ enregistrés. Reprenez plus tard.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      },
+      "2": {
+        "content": "$2",
+        "example": "…"
+      }
+    }
   },
   "statusProgressSaved": {
-    "message": "$1$ · $2$ enregistrés"
+    "message": "$1$ · $2$ enregistrés",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      },
+      "2": {
+        "content": "$2",
+        "example": "…"
+      }
+    }
   },
   "statusProgressOf": {
-    "message": "$1$ · $2$ sur $3$"
+    "message": "$1$ · $2$ sur $3$",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      },
+      "2": {
+        "content": "$2",
+        "example": "…"
+      },
+      "3": {
+        "content": "$3",
+        "example": "…"
+      }
+    }
   },
   "statusPausedShort": {
-    "message": "En pause pendant $1$. $2$ enregistrés."
+    "message": "En pause pendant $1$. $2$ enregistrés.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      },
+      "2": {
+        "content": "$2",
+        "example": "…"
+      }
+    }
   },
   "listFollowers": {
     "message": "Abonnés"
@@ -78,10 +135,22 @@
     "message": "Dernière synchro"
   },
   "lastSyncedAt": {
-    "message": "Dernière synchro : $1$"
+    "message": "Dernière synchro : $1$",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      }
+    }
   },
   "lastSyncedShortList": {
-    "message": "$1$. Une liste était en dessous du total du profil."
+    "message": "$1$. Une liste était en dessous du total du profil.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      }
+    }
   },
   "syncStarting": {
     "message": "Démarrage de la synchro. Gardez l’onglet Instagram visible."
@@ -108,7 +177,13 @@
     "message": "Impossible de fermer la liste. Fermez-la puis resynchronisez."
   },
   "errCountNotFound": {
-    "message": "Compteur $1$ introuvable sur votre profil."
+    "message": "Compteur $1$ introuvable sur votre profil.",
+    "placeholders": {
+      "1": {
+        "content": "$1",
+        "example": "…"
+      }
+    }
   },
   "errListNotOpen": {
     "message": "Instagram n’a pas ouvert la liste. Actualisez la page."

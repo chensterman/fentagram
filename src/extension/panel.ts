@@ -23,7 +23,7 @@ async function boot(root: Element): Promise<void> {
   if (preview) {
     redraw = () => {
       const model = panelModel(previewSnapshots(preview))
-      render(root, model, model.status, false, () => {})
+      render(root, model, model.status, false, () => {}, () => {})
     }
     redraw()
     return
@@ -35,7 +35,7 @@ async function boot(root: Element): Promise<void> {
     const [snapshots, pictures] = await Promise.all([store.list(), avatars.list()])
     pictureBook = pictures
     const model = panelModel(snapshots)
-    render(root, model, liveStatus ?? model.status, busy, () => void startSync(draw))
+    render(root, model, liveStatus ?? model.status, busy, () => void startSync(draw), () => void openInstagram(draw))
   }
   redraw = () => {
     void draw()
@@ -56,15 +56,10 @@ async function startSync(draw: () => Promise<void>): Promise<void> {
   busy = true
   liveStatus = t('syncStarting')
   await draw()
-  const tab = await instagramTab()
-  if (!tab?.id) {
-    busy = false
-    liveStatus = t('syncNoTab')
-    await draw()
-    return
-  }
   try {
-    const response = await chrome.tabs.sendMessage(tab.id, { type: 'fentagram-sync' }) as { ok?: boolean; error?: string } | undefined
+    const response = (await chrome.runtime.sendMessage({ type: 'fentagram-start-sync' })) as
+      | { ok?: boolean; error?: string }
+      | undefined
     if (!response?.ok) liveStatus = response?.error ?? t('syncRefreshTab')
   } catch {
     liveStatus = t('syncRefreshTab')
@@ -74,26 +69,38 @@ async function startSync(draw: () => Promise<void>): Promise<void> {
   }
 }
 
-async function instagramTab(): Promise<chrome.tabs.Tab | undefined> {
-  const [active] = await chrome.tabs.query({ active: true, currentWindow: true })
-  if (active?.url?.includes('instagram.com')) return active
-  const tabs = await chrome.tabs.query({ url: 'https://www.instagram.com/*' })
-  return tabs[0]
+async function openInstagram(draw: () => Promise<void>): Promise<void> {
+  await chrome.tabs.create({ url: 'https://www.instagram.com/' })
+  liveStatus = t('statusIdle')
+  await draw()
 }
 
-function render(root: Element, model: PanelModel, status: string, disabled: boolean, onSync: () => void): void {
+function render(
+  root: Element,
+  model: PanelModel,
+  status: string,
+  disabled: boolean,
+  onSync: () => void,
+  onOpenInstagram: () => void,
+): void {
   rememberScroll(root)
   const previous = renderedTab
   const entering = previous !== selected
   renderedTab = selected
   root.innerHTML = ''
   const panel = pane(model, entering)
-  root.append(header(model, status, disabled, onSync), tablist(model), panel)
+  root.append(header(model, status, disabled, onSync, onOpenInstagram), tablist(model), panel)
   panel.scrollTop = scrollTops.get(selected) ?? 0
   if (previous !== null && entering) root.querySelector<HTMLButtonElement>(`#tab-${selected}`)?.focus()
 }
 
-function header(model: PanelModel, status: string, disabled: boolean, onSync: () => void): HTMLElement {
+function header(
+  model: PanelModel,
+  status: string,
+  disabled: boolean,
+  onSync: () => void,
+  onOpenInstagram: () => void,
+): HTMLElement {
   const bar = document.createElement('header')
   const brand = document.createElement('div')
   brand.className = 'brand'
@@ -110,13 +117,22 @@ function header(model: PanelModel, status: string, disabled: boolean, onSync: ()
   statusNode.id = 'status'
   statusNode.textContent = status
 
+  const actions = document.createElement('div')
+  actions.className = 'actions'
+  const open = document.createElement('button')
+  open.type = 'button'
+  open.className = 'open-instagram'
+  open.textContent = t('buttonOpenInstagram')
+  open.disabled = disabled
+  open.addEventListener('click', onOpenInstagram)
   const button = document.createElement('button')
   button.type = 'button'
   button.className = 'sync'
   button.textContent = disabled ? t('buttonSyncing') : model.button
   button.disabled = disabled
   button.addEventListener('click', onSync)
-  bar.append(brand, statusNode, button)
+  actions.append(open, button)
+  bar.append(brand, statusNode, actions)
   return bar
 }
 
