@@ -8,6 +8,12 @@ A Chrome side panel for your own Instagram profile. It syncs your followers and 
 
 Instagram could have built this. They didn’t. Your lists and tiny profile pics stay in this browser anyway—no password, no server.
 
+## Install
+
+1. Open [Fentagram on the Chrome Web Store](https://chromewebstore.google.com/detail/fentagram/mildadpoacohpenobghfkfmfbalbplpk).
+2. Click **Add to Chrome**, then **Add extension**.
+3. Click the puzzle-piece icon in the Chrome toolbar and pin Fentagram if you want it one click away.
+
 ## Use it
 
 1. Open your profile on Instagram and click **Profile** in the nav to open the side panel.
