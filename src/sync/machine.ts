@@ -1,5 +1,5 @@
 import { accountKey, type Account } from '../domain/account.ts'
-import type { CountReading } from '../domain/count.ts'
+import { countShortfallTolerance, type CountReading } from '../domain/count.ts'
 import type { ListStatus, StopReason } from '../domain/snapshot.ts'
 import type { CollectOptions, ListReader, PageSignal } from './types.ts'
 
@@ -71,7 +71,7 @@ function decideIdleScroll(
   idleScrolls: number,
   options: CollectOptions,
 ): Decision {
-  if (header?.kind === 'exact' && size >= header.value) {
+  if (header?.kind === 'exact' && header.value - size <= countShortfallTolerance(header.value)) {
     return { type: 'complete', idleScrolls }
   }
 

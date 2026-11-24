@@ -7,9 +7,13 @@ export interface FollowerEvent {
   at: string
 }
 
+export function isTrustedFollowerSnapshot(snapshot: Snapshot): boolean {
+  return snapshot.followersStatus === 'complete'
+}
+
 export function followerHistory(snapshots: Snapshot[]): { unfollowed: FollowerEvent[]; followed: FollowerEvent[] } {
   const trusted = snapshots
-    .filter((snapshot) => snapshot.followersStatus === 'complete')
+    .filter(isTrustedFollowerSnapshot)
     .sort((a, b) => stamp(a).localeCompare(stamp(b)))
   const lost: FollowerEvent[] = []
   const gained: FollowerEvent[] = []

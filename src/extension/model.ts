@@ -1,6 +1,6 @@
 import type { Account } from '../domain/account.ts'
 import { notFollowingBack } from '../domain/diff.ts'
-import { followerHistory } from '../domain/history.ts'
+import { followerHistory, isTrustedFollowerSnapshot } from '../domain/history.ts'
 import type { Snapshot } from '../domain/snapshot.ts'
 import { isFinished } from '../domain/snapshot.ts'
 import { t, listLabel } from './i18n.ts'
@@ -32,7 +32,7 @@ export function panelModel(snapshots: Snapshot[]): PanelModel {
     .filter((snapshot) => isListReady(snapshot.followersStatus) && isListReady(snapshot.followingStatus))
     .sort((a, b) => stamp(b).localeCompare(stamp(a)))[0] ?? null
   const history = followerHistory(snapshots)
-  const completeFollowers = snapshots.filter((snapshot) => snapshot.followersStatus === 'complete').length
+  const completeFollowers = snapshots.filter(isTrustedFollowerSnapshot).length
   const notFollowing = ready ? notFollowingBack(ready.followers, ready.following) : []
 
   return {

@@ -6,6 +6,11 @@ export interface CountReading {
 
 const COUNT_TOKEN = /(\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?\s*[kKmM]|\d+)/
 
+/** A collected list this close to an exact profile total is safe to diff between syncs. */
+export function countShortfallTolerance(exactCount: number): number {
+  return Math.ceil(exactCount * 0.01)
+}
+
 export function parseCount(raw: string): CountReading | null {
   const match = raw.trim().match(COUNT_TOKEN)
   if (!match?.[1]) return null

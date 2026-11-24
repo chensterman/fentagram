@@ -1,5 +1,12 @@
 import { describe, expect, test } from 'vitest'
-import { parseCount } from './count.ts'
+import { countShortfallTolerance, parseCount } from './count.ts'
+
+describe('countShortfallTolerance', () => {
+  test('allows one percent of an exact profile count', () => {
+    expect(countShortfallTolerance(400)).toBe(4)
+    expect(countShortfallTolerance(4945)).toBe(50)
+  })
+})
 
 describe('parseCount', () => {
   test('reads an exact grouped number', () => {

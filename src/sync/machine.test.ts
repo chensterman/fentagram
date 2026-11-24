@@ -77,15 +77,15 @@ describe('collectList', () => {
     expect(names(result.accounts)).toEqual(names(pages.flat()))
   })
 
-  test('estimates when pagination ends slightly below the profile count', async () => {
-    const pages = [pageOf(0, 4942)]
-    const list = new FakeList(pages, exact(4945))
+  test('completes when pagination ends within one percent of the profile count', async () => {
+    const pages = [pageOf(0, 399)]
+    const list = new FakeList(pages, exact(400))
 
     const result = await collectList(list, [], options)
 
-    expect(result.status).toBe('estimated')
+    expect(result.status).toBe('complete')
     expect(result.stopReason).toBe('done')
-    expect(result.accounts).toHaveLength(4942)
+    expect(result.accounts).toHaveLength(399)
   })
 
   test('marks an abbreviated header estimated after empty settled scrolls', async () => {
